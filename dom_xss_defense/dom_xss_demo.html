@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tool 14: DOM-Based XSS Defense Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f7f6; color: #333; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input[type="text"] { padding: 8px; width: 100%; max-width: 400px; box-sizing: border-box; margin-bottom: 10px; }
+        button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; margin-right: 5px; }
+        .btn-unsafe { background: #dc3545; }
+        .btn-unsafe:hover { background: #c82333; }
+        .btn-safe { background: #28a745; }
+        .btn-safe:hover { background: #218838; }
+        .output-box { margin-top: 15px; padding: 15px; border: 1px dashed #ccc; background: #fafafa; border-radius: 4px; min-height: 40px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Tool 14: DOM-Based XSS Defense Demo</h2>
+    <p>Enter your text or payload below to test safe vs unsafe DOM rendering:</p>
+    
+    <input type="text" id="userInput" placeholder="Type text or XSS payload (e.g., &lt;img src=x onerror=alert(1)&gt;)" value="&lt;img src=x onerror=alert('XSS_TRIGGERED!')&gt;">
+    <br>
+    
+    <!-- Unsafe Branch: Uses innerHTML (Vulnerable to DOM XSS) -->
+    <button class="btn-unsafe" onclick="renderUnsafe()">Render Unsafe (innerHTML)</button>
+    
+    <!-- Safe Branch: Uses textContent (Protected against DOM XSS) -->
+    <button class="btn-safe" onclick="renderSafe()">Render Safe (textContent)</button>
+</div>
+
+<div class="card">
+    <h3>Output Result:</h3>
+    <div id="outputContainer" class="output-box">No output yet. Click one of the buttons above.</div>
+</div>
+
+<script>
+    /**
+     * Unsafe Rendering Function:
+     * DANGER: innerHTML interprets strings as HTML/JavaScript markup, allowing DOM-based XSS execution.
+     */
+    function renderUnsafe() {
+        const inputVal = document.getElementById('userInput').value;
+        const container = document.getElementById('outputContainer');
+        
+        // Vulnerable assignment directly interpreting HTML tags and script execution
+        container.innerHTML = inputVal;
+    }
+
+    /**
+     * Safe Rendering Function:
+     * SECURE: textContent treats input strictly as plain text, neutralizing HTML tags and script payloads.
+     */
+    function renderSafe() {
+        const inputVal = document.getElementById('userInput').value;
+        const container = document.getElementById('outputContainer');
+        
+        // Safe assignment treating the input purely as text strings
+        container.textContent = inputVal;
+    }
+</script>
+
+</body>
+</html>
